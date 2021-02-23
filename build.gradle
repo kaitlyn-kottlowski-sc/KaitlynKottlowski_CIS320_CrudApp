@@ -3,7 +3,7 @@ plugins {
     id 'war'
 }
 
-group 'edu.simpson.cis320.crud'
+group 'edu.simpson.kottlowski'
 version '1.0-SNAPSHOT'
 
 repositories {
