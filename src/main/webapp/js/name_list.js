@@ -77,10 +77,13 @@ function validate(input, reg, type)
         // This is an INVALID field
         input.removeClass("is-valid");
         input.addClass("is-invalid");
+        isValid = false;
     }
 }
 
+let isValid;
 function saveChanges() {
+    isValid = true;
     console.log("Save changes");
 
     let firstName = $('#firstName');
@@ -102,10 +105,38 @@ function saveChanges() {
     let birthdayReg = /^\d{4}-\d{2}-\d{2}$/
     validate(birthday, birthdayReg, "birthday");
 
-    //$('#myModal').modal('hide');
+    if (isValid) {
+        console.log("Valid form");
+        let my_data = {first: firstName.val(), last: lastName.val(),
+        email: email.val(), phone:phone.val().replaceAll('/\D/g', ''), birthday: birthday.val()};
+        jqueryPostJSONButtonAction(my_data);
+        // Code to submit your form will go here.
+    }
+
+
 }
 
 // There's a button in the form with ID "saveChanges"
 // Associate the function saveChanges with it.
 let saveChangesButton = $('#saveChanges');
 saveChangesButton.on("click", saveChanges);
+
+<!-- AJAX Post using JSON data -->
+function jqueryPostJSONButtonAction(dataToServer) {
+    console.log("success? "+dataToServer);
+    var url = "api/name_list_edit";
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(dataToServer),
+        success: function(dataFromServer) {
+            console.log(dataFromServer);
+            $('#myModal').modal('hide');
+            $('#mytable tbody').empty();
+            updateTable();
+        },
+        contentType: "application/json",
+        dataType: 'text' // Could be JSON or whatever too
+    });
+}
