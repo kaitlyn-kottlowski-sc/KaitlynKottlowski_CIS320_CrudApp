@@ -93,7 +93,7 @@ public class PersonDAO {
     /**
      * Post a new person record in the database.
      */
-    public static void addPeople(Person person) {
+    public static void addPerson(Person person) {
         log.log(Level.INFO, "Add person");
 
         // Declare our variables
@@ -113,6 +113,42 @@ public class PersonDAO {
             stmt.setString(3, person.getPhone());
             stmt.setString(4, person.getEmail());
             stmt.setString(5, person.getBirthday());
+
+            // Execute the SQL and get the results
+            stmt.executeUpdate();
+
+        } catch (SQLException se) {
+            log.log(Level.SEVERE, "SQL Error", se );
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error", e );
+        } finally {
+            // Ok, close our result set, statement, and connection
+            try { if(stmt != null) stmt.close(); }
+            catch (Exception e) { log.log(Level.SEVERE, "Error", e ); }
+
+            try { if(conn != null) conn.close(); }
+            catch (Exception e) { log.log(Level.SEVERE, "Error", e ); }
+        }
+    }
+
+    /**
+     * Delete person record in the database.
+     */
+    public static void deletePerson(int id) {
+        log.log(Level.INFO, "Delete person: "+id);
+
+        // Declare our variables
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        // Databases are unreliable. Use some exception handling
+        try {
+            // Get our database connection
+            conn = DBHelper.getConnection();
+
+            String sql = "DELETE FROM person WHERE id = ?;";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
 
             // Execute the SQL and get the results
             stmt.executeUpdate();

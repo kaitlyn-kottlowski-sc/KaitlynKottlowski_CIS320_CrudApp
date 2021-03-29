@@ -1,16 +1,20 @@
 package edu.simpson.kottlowski;
 
-import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@WebServlet(name = "nameListEditServlet", value = "/api/name_list_edit")
-public class NameListEditServlet extends HttpServlet {
+@WebServlet(name = "nameListDeleteServlet", value = "/api/name_list_delete")
+public class NameListDeleteServlet extends HttpServlet {
     private final static Logger log = Logger.getLogger(PersonDAO.class.getName());
 
     @Override
@@ -23,7 +27,7 @@ public class NameListEditServlet extends HttpServlet {
 
         // Open the request for reading. Read in each line, put it into a string.
         // Yes, I think there should be an easier way.
-        java.io.BufferedReader in = request.getReader();
+        BufferedReader in = request.getReader();
         String requestString = new String();
         for (String line; (line = in.readLine()) != null; requestString += line);
 
@@ -33,8 +37,8 @@ public class NameListEditServlet extends HttpServlet {
         // Great! Now we want to parse the object, and pop it into our business object. Field
         // names have to match. That's the magic.
         Jsonb jsonb = JsonbBuilder.create();
-        Person person = jsonb.fromJson(requestString, Person.class);
+        int id = jsonb.fromJson(requestString, Integer.class);
 
-        PersonDAO.addPerson(person);
+        PersonDAO.deletePerson(id);
     }
 }

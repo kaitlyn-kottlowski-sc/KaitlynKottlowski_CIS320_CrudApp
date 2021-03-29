@@ -24,8 +24,16 @@ function updateTable() {
                     + htmlSafe(json_result[i].phone)
                     + '</td><td>'
                     + htmlSafe(json_result[i].birthday)
-                    + '</td></tr>');
+                    + '</td>'
+                    + '<td>'
+                    +   '<button type=\'button\' name=\'delete\' ' +
+                            'class=\'deleteButton btn btn-danger\' value=\''+json_result[i].id +'\'>'
+                    +      '\nDelete\n'
+                    +   '</button>'
+                    + '</td>'
+                    + '</tr>');
             }
+            $(".deleteButton").on("click", deleteItem);
         }
     );
 }
@@ -109,7 +117,7 @@ function saveChanges() {
         console.log("Valid form");
         let my_data = {first: firstName.val(), last: lastName.val(),
         email: email.val(), phone:phone.val().replaceAll('/\D/g', ''), birthday: birthday.val()};
-        jqueryPostJSONButtonAction(my_data);
+        addRecord(my_data);
         // Code to submit your form will go here.
     }
 
@@ -121,8 +129,14 @@ function saveChanges() {
 let saveChangesButton = $('#saveChanges');
 saveChangesButton.on("click", saveChanges);
 
+function deleteItem(e) {
+    console.log("Delete");
+    console.log(e.target.value);
+    deleteRecord(e.target.value);
+}
+
 <!-- AJAX Post using JSON data -->
-function jqueryPostJSONButtonAction(dataToServer) {
+function addRecord(dataToServer) {
     console.log("success? "+dataToServer);
     var url = "api/name_list_edit";
 
@@ -133,6 +147,23 @@ function jqueryPostJSONButtonAction(dataToServer) {
         success: function(dataFromServer) {
             console.log(dataFromServer);
             $('#myModal').modal('hide');
+            $('#mytable tbody').empty();
+            updateTable();
+        },
+        contentType: "application/json",
+        dataType: 'text' // Could be JSON or whatever too
+    });
+}
+
+function deleteRecord(id) {
+    console.log("success? "+id);
+    var url = "api/name_list_delete";
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: id,
+        success: function(id) {
             $('#mytable tbody').empty();
             updateTable();
         },
