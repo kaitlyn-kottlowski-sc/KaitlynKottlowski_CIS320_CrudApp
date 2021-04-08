@@ -26,6 +26,11 @@ function updateTable() {
                     + htmlSafe(json_result[i].birthday)
                     + '</td>'
                     + '<td>'
+                    +   '<button type=\'button\' name=\'edit\' '
+                    +   'style=\'margin-right: 5px\' class=\'editButton btn '
+                    +    'btn-primary\' value=\''+json_result[i].id +'\'>'
+                    +      '\nEdit\n'
+                    +   '</button>'
                     +   '<button type=\'button\' name=\'delete\' ' +
                             'class=\'deleteButton btn btn-danger\' value=\''+json_result[i].id +'\'>'
                     +      '\nDelete\n'
@@ -34,6 +39,7 @@ function updateTable() {
                     + '</tr>');
             }
             $(".deleteButton").on("click", deleteItem);
+            $(".editButton").on("click", editItem);
         }
     );
 }
@@ -113,10 +119,13 @@ function saveChanges() {
     let birthdayReg = /^\d{4}-\d{2}-\d{2}$/
     validate(birthday, birthdayReg, "birthday");
 
+    let id = $('#id').val();
+    id = id == "" ? 0 : parseInt(id);
     if (isValid) {
         console.log("Valid form");
-        let my_data = {first: firstName.val(), last: lastName.val(),
+        let my_data = {id: id,first: firstName.val(), last: lastName.val(),
         email: email.val(), phone:phone.val().replaceAll('/\D/g', ''), birthday: birthday.val()};
+
         addRecord(my_data);
         // Code to submit your form will go here.
     }
@@ -137,7 +146,7 @@ function deleteItem(e) {
 
 <!-- AJAX Post using JSON data -->
 function addRecord(dataToServer) {
-    console.log("success? "+dataToServer);
+    console.log("success add? "+dataToServer);
     var url = "api/name_list_edit";
 
     $.ajax({
@@ -156,7 +165,7 @@ function addRecord(dataToServer) {
 }
 
 function deleteRecord(id) {
-    console.log("success? "+id);
+    console.log("success delete? "+id);
     var url = "api/name_list_delete";
 
     $.ajax({
@@ -170,4 +179,40 @@ function deleteRecord(id) {
         contentType: "application/json",
         dataType: 'text' // Could be JSON or whatever too
     });
+}
+
+function editItem(e) {
+    console.debug("Edit");
+    console.debug("Edit: " + e.target.value);
+
+    let id = e.target.value;
+    $('#id').val(id);
+
+    let allTds = e.target.parentNode.parentNode.querySelectorAll("td");
+
+    let first = allTds[1].innerText;
+    $('#firstName').val(first);
+
+    let last = allTds[2].innerText;
+    $('#lastName').val(last);
+
+    let email = allTds[3].innerText;
+    $('#email').val(email);
+
+    let phone = allTds[4].innerText;
+    $('#phone').val(phone);
+
+    let birthday = allTds[5].innerText;
+    // Parse date to current time in milliseconds
+    let timestamp = Date.parse(birthday);
+    // Made date object out of that time
+    let dateObject = new Date(timestamp);
+    // Convert to a full ISO formatted string
+    let fullDateString = dateObject.toISOString();
+    // Trim off the time part
+    let shortDateString = fullDateString.split('T')[0];
+    $('#birthday').val(shortDateString);
+
+    $('#myModal').modal('show');
+
 }

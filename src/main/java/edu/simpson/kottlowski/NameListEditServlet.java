@@ -30,11 +30,16 @@ public class NameListEditServlet extends HttpServlet {
         // Log the string we got as a request, just as a check
         log.log(Level.INFO, requestString);
 
+
         // Great! Now we want to parse the object, and pop it into our business object. Field
         // names have to match. That's the magic.
         Jsonb jsonb = JsonbBuilder.create();
         Person person = jsonb.fromJson(requestString, Person.class);
 
-        PersonDAO.addPerson(person);
+        log.log(Level.INFO, String.valueOf(person.getId()));
+
+        if (person.getId() == 0)
+            PersonDAO.addPerson(person);
+        else PersonDAO.editPerson(person);
     }
 }

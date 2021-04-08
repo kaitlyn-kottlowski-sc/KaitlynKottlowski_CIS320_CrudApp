@@ -23,13 +23,13 @@ public class NameListGetServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-// Use our DAO to get a list of people
+        // Use our DAO to get a list of people
         List<Person> peopleList = PersonDAO.getPeople();
 
         Jsonb jsonb = JsonbBuilder.create();
         String jsonString = jsonb.toJson(peopleList);
 
-// Write out that string
+        // Write out that string
         out.println(jsonString);
     }
 }
